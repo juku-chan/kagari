@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 
 <html lang="ja">
@@ -14,7 +12,7 @@
             box-sizing: border-box;
         }
 
-```
+
     body {
         font-family: 'Arial', sans-serif;
         background: linear-gradient(135deg, #ffeef8 0%, #f0e6ff 50%, #e6f3ff 100%);
@@ -355,4 +353,36 @@
 
     function calculateSummary() {
         const deposit20 = parseInt(document.getElementById('deposit20').value) || 0;
-        const deposit25 = parseIn
+        const deposit25 = parseInt(document.getElementById('deposit25').value) || 0;
+        const smbc = parseInt(document.getElementById('smbc').value) || 0;
+        const paypay = parseInt(document.getElementById('paypay').value) || 0;
+        const aplus = parseInt(document.getElementById('aplus').value) || 0;
+        const epos = parseInt(document.getElementById('epos').value) || 0;
+
+        const totalDeposit = deposit20 + deposit25;
+        const totalWithdraw = smbc + paypay + aplus + epos;
+        const monthlyBalance = totalDeposit - totalWithdraw;
+
+        document.getElementById('totalDeposit').textContent = `+¥${totalDeposit.toLocaleString()}`;
+        document.getElementById('totalWithdraw').textContent = `-¥${totalWithdraw.toLocaleString()}`;
+        
+        const balanceElement = document.getElementById('monthlyBalance');
+        if (monthlyBalance >= 0) {
+            balanceElement.textContent = `+¥${monthlyBalance.toLocaleString()}`;
+            balanceElement.className = 'summary-amount positive';
+        } else {
+            balanceElement.textContent = `-¥${Math.abs(monthlyBalance).toLocaleString()}`;
+            balanceElement.className = 'summary-amount negative';
+        }
+
+        // 自動保存
+        saveCurrentMonth();
+    }
+
+    // 初期化
+    loadMonth();
+</script>
+```
+
+</body>
+</html>
