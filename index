@@ -1,1 +1,358 @@
 
+
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月別入出金スケジュール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #ffeef8 0%, #f0e6ff 50%, #e6f3ff 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(15px);
+        border-radius: 25px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .nav-btn {
+        background: linear-gradient(135deg, #d4b5d4, #c9a9dd);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(212, 181, 212, 0.3);
+    }
+
+    .nav-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 181, 212, 0.4);
+    }
+
+    .nav-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .month-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #8b5a8c;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .schedule-section {
+        background: linear-gradient(135deg, #f8f0ff, #fff0f8);
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .schedule-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(10px);
+    }
+
+    .schedule-item.deposit {
+        border-left: 5px solid #b8e6b8;
+    }
+
+    .schedule-item.withdraw {
+        border-left: 5px solid #ffb8b8;
+    }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-title {
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+
+    .item-title.deposit {
+        color: #2d5a2d;
+    }
+
+    .item-title.withdraw {
+        color: #5a2d2d;
+    }
+
+    .item-date {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .amount-input {
+        width: 120px;
+        padding: 8px 12px;
+        border: 2px solid #e8d5e8;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: right;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .amount-input:focus {
+        outline: none;
+        border-color: #d4b5d4;
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 0 10px rgba(212, 181, 212, 0.2);
+    }
+
+    .amount-input.deposit {
+        color: #2d5a2d;
+    }
+
+    .amount-input.withdraw {
+        color: #5a2d2d;
+    }
+
+    .summary-section {
+        background: linear-gradient(135d, #d4b5d4, #c9a9dd, #b8c8f0);
+        color: white;
+        padding: 25px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(212, 181, 212, 0.2);
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+
+    .summary-row:last-child {
+        margin-bottom: 0;
+        padding-top: 15px;
+        border-top: 2px solid rgba(255, 255, 255, 0.3);
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .summary-amount {
+        font-weight: bold;
+    }
+
+    .summary-amount.positive {
+        color: #b8ffb8;
+    }
+
+    .summary-amount.negative {
+        color: #ffb8b8;
+    }
+
+    .save-note {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #8b7c9e;
+        font-style: italic;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="nav-btn" onclick="previousMonth()">‹</button>
+            <div class="month-title" id="monthTitle">2025年1月</div>
+            <button class="nav-btn" onclick="nextMonth()">›</button>
+        </div>
+
+```
+    <div class="schedule-section">
+        <div class="schedule-item deposit">
+            <div class="item-info">
+                <div class="item-title deposit">入金</div>
+                <div class="item-date">毎月20日</div>
+            </div>
+            <input type="number" class="amount-input deposit" id="deposit20" value="200000" oninput="calculateSummary()">
+        </div>
+
+        <div class="schedule-item deposit">
+            <div class="item-info">
+                <div class="item-title deposit">入金</div>
+                <div class="item-date">毎月25日</div>
+            </div>
+            <input type="number" class="amount-input deposit" id="deposit25" value="150000" oninput="calculateSummary()">
+        </div>
+
+        <div class="schedule-item withdraw">
+            <div class="item-info">
+                <div class="item-title withdraw">SMBC</div>
+                <div class="item-date">毎月26日</div>
+            </div>
+            <input type="number" class="amount-input withdraw" id="smbc" value="80000" oninput="calculateSummary()">
+        </div>
+
+        <div class="schedule-item withdraw">
+            <div class="item-info">
+                <div class="item-title withdraw">PayPay</div>
+                <div class="item-date">毎月27日</div>
+            </div>
+            <input type="number" class="amount-input withdraw" id="paypay" value="50000" oninput="calculateSummary()">
+        </div>
+
+        <div class="schedule-item withdraw">
+            <div class="item-info">
+                <div class="item-title withdraw">Aplus</div>
+                <div class="item-date">毎月27日</div>
+            </div>
+            <input type="number" class="amount-input withdraw" id="aplus" value="30000" oninput="calculateSummary()">
+        </div>
+
+        <div class="schedule-item withdraw">
+            <div class="item-info">
+                <div class="item-title withdraw">Epos</div>
+                <div class="item-date">翌月4日</div>
+            </div>
+            <input type="number" class="amount-input withdraw" id="epos" value="25000" oninput="calculateSummary()">
+        </div>
+    </div>
+
+    <div class="summary-section">
+        <div class="summary-row">
+            <span>入金合計:</span>
+            <span class="summary-amount" id="totalDeposit">+¥350,000</span>
+        </div>
+        <div class="summary-row">
+            <span>出金合計:</span>
+            <span class="summary-amount" id="totalWithdraw">-¥185,000</span>
+        </div>
+        <div class="summary-row">
+            <span>月間収支:</span>
+            <span class="summary-amount" id="monthlyBalance">+¥165,000</span>
+        </div>
+    </div>
+
+    <div class="save-note">
+        💾 金額変更は自動で保存されます
+    </div>
+</div>
+
+<script>
+    let currentYear = 2025;
+    let currentMonth = 1;
+    let monthlyData = {};
+
+    const monthNames = [
+        '1月', '2月', '3月', '4月', '5月', '6月',
+        '7月', '8月', '9月', '10月', '11月', '12月'
+    ];
+
+    function getMonthKey() {
+        return `${currentYear}-${currentMonth}`;
+    }
+
+    function saveCurrentMonth() {
+        const key = getMonthKey();
+        monthlyData[key] = {
+            deposit20: parseInt(document.getElementById('deposit20').value) || 0,
+            deposit25: parseInt(document.getElementById('deposit25').value) || 0,
+            smbc: parseInt(document.getElementById('smbc').value) || 0,
+            paypay: parseInt(document.getElementById('paypay').value) || 0,
+            aplus: parseInt(document.getElementById('aplus').value) || 0,
+            epos: parseInt(document.getElementById('epos').value) || 0
+        };
+    }
+
+    function loadMonth() {
+        const key = getMonthKey();
+        const data = monthlyData[key];
+        
+        if (data) {
+            document.getElementById('deposit20').value = data.deposit20;
+            document.getElementById('deposit25').value = data.deposit25;
+            document.getElementById('smbc').value = data.smbc;
+            document.getElementById('paypay').value = data.paypay;
+            document.getElementById('aplus').value = data.aplus;
+            document.getElementById('epos').value = data.epos;
+        } else {
+            // デフォルト値を設定
+            document.getElementById('deposit20').value = 200000;
+            document.getElementById('deposit25').value = 150000;
+            document.getElementById('smbc').value = 80000;
+            document.getElementById('paypay').value = 50000;
+            document.getElementById('aplus').value = 30000;
+            document.getElementById('epos').value = 25000;
+        }
+        
+        updateMonthTitle();
+        calculateSummary();
+    }
+
+    function updateMonthTitle() {
+        document.getElementById('monthTitle').textContent = `${currentYear}年${monthNames[currentMonth - 1]}`;
+    }
+
+    function previousMonth() {
+        saveCurrentMonth();
+        currentMonth--;
+        if (currentMonth < 1) {
+            currentMonth = 12;
+            currentYear--;
+        }
+        loadMonth();
+    }
+
+    function nextMonth() {
+        saveCurrentMonth();
+        currentMonth++;
+        if (currentMonth > 12) {
+            currentMonth = 1;
+            currentYear++;
+        }
+        loadMonth();
+    }
+
+    function calculateSummary() {
+        const deposit20 = parseInt(document.getElementById('deposit20').value) || 0;
+        const deposit25 = parseIn
